@@ -2,7 +2,7 @@ error/
 result/
 target/
 
-.csv
+*.csv
 
 # Log files
 *.log
