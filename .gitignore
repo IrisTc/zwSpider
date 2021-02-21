@@ -1,0 +1,11 @@
+error/
+result/
+target/
+
+.csv
+
+# Log files
+*.log
+
+# Editor directories and files
+.idea
