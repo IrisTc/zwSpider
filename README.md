@@ -13,6 +13,19 @@ crontab -e
 ##### 2.爬取链接内容
 ```
 # 爬取成果，每20秒执行keep-result.sh脚本 第一个参数为年份，第二个参数为爬取的类型
-* * * * * sleep 20; /mnt/d/spider/zwData/keep-result.sh 2020 achievement > /mnt/d/spider/zwData/keep-achievement.log 2>&1
+* * * * * sleep 20; /mnt/d/spider/zwData/keep-result.sh 2020 achievement >> /mnt/d/spider/zwData/keep-achievement.log 2>&1
+```
+
+**可根据target内的文件大小情况手动修改脚本中分割文件的方法**
+
+```bash
+# 一个类型一个文件，即achievement可都放在achievement.csv中
+# result_filename=$result_type
+
+# 一个大写字母为一个文件，即boso可分为boso_A.csv,boso_B.csv...
+result_filename=${filename::-7}
+
+# 直接以分类代码为一个文件，即journal可分为journal_A001.csv,journal_A002.csv..
+# result_filename=${filename%.*}".csv"
 ```
 
