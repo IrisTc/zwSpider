@@ -12,10 +12,14 @@ class DmozSpider(scrapy.Spider):
 
     def start_requests(self):
         self.year = '2020'
+        getError = True
         base_url = 'https://kns.cnki.net/KCMS/detail/detail.aspx?'
-        base_path = 'target/' + self.year + '/'
         util = UtilClass(self.year)
-        links = util.getLinks(base_path, 'boso')
+        if getError:
+            links = util.getErrorUrl('boso')
+            # links = util.getErrorLinks('boso')
+        else:
+            links = util.getLinks('boso')
         # link = 'dbcode=CMFD&dbname=CMFD202002&filename=1020379035.nh'
         for link in links:
             url = base_url + link
@@ -37,7 +41,9 @@ class DmozSpider(scrapy.Spider):
         suid = ''.join(uid.split('-'))
         item['uid'] = suid
         item['title'] = response.xpath('//div[@class="wx-tit"]/h1/text()').extract_first()
-        item['summary'] = response.xpath('//span[@id="ChDivSummary"]/text()').extract_first()
+        summary = response.xpath('//span[@id="ChDivSummary"]/text()').extract_first()
+        if summary:
+            item['summary'] = summary.replace('\n', '').replace('\r', ' ')
         keywordsfuncs = response.xpath('//div[@class="brief"]/div/p[@class="keywords"]/a/@onclick').extract()
         keywords = ""
         for k in keywordsfuncs:

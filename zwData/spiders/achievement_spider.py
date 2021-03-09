@@ -13,10 +13,14 @@ class AchievementSpiderSpider(scrapy.Spider):
 
     def start_requests(self):
         self.year = '2020'
+        getError = True
         base_url = 'https://kns.cnki.net/kcms/detail/detail.aspx?'
-        base_path = 'target/' + self.year + '/'
         util = UtilClass(self.year)
-        links = util.getLinks(base_path, 'achievement')
+        if getError:
+            # links = util.getErrorLinks('achievement')
+            links = util.getErrorUrl('achievement')
+        else:
+            links = util.getLinks('achievement')
         for link in links:
         # link = 'dbcode=SNAD&dbname=SNAD&filename=SNAD000001855707'
             url = base_url + link
@@ -54,7 +58,7 @@ class AchievementSpiderSpider(scrapy.Spider):
             if title == '学科分类号：':
                 item['subject_code'] = content
             if title == '成果简介：':
-                item['summary'] = content
+                item['summary'] = content.replace('\n', '').replace('\r', ' ')
             if title == '成果类别：':
                 item['category'] = content
             if title == '成果入库时间：':

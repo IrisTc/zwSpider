@@ -17,10 +17,16 @@ then
 			break
 		fi
 	done
-	# result_filename=$result_type
-	result_filename=${filename::-7}
-	# result_filename=${filename%.*}".csv"
-	echo $result_filename
+	if [[ $result_type == 'achievement' ]]
+	then
+		result_filename=$result_type
+	elif [[ $result_type == 'boso' ]]
+	then
+		result_filename=${filename::-7}
+	else
+		result_filename=${filename%.*}".csv"
+	fi
+	echo "存储文件为$result_filename"
 	python3 -m scrapy crawl $result_type -o "$result_path$result_filename.csv" -s LOG_FILE=warn.log
 else
 	echo "scrapy is running"

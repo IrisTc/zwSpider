@@ -1,6 +1,9 @@
 import os
+import time
 
 import arrow
+import requests
+
 
 class UtilClass():
     def __init__(self, year):
@@ -46,8 +49,9 @@ class UtilClass():
             all_date_list.append(b)
         return all_date_list
 
-    # 获取文件类的连接
-    def getLinks(self,base_path,type):
+    # 获取文件类的链接
+    def getLinks(self,type):
+        base_path = 'target/' + self.year + '/'
         files = os.listdir(base_path)
         for file in files:
             if '-' in file:
@@ -61,6 +65,106 @@ class UtilClass():
                 os.rename(file_path, base_path + '-' + file)
                 break
         return links
+
+    def getErrorLinks(self,type):
+        file_path = 'target/' + self.year + '/'
+        file_name = 'error_' + type + '.txt'
+        with open(file_path+file_name, 'r') as fp:
+            all = fp.read()
+        links = all.split()
+        os.rename(file_path + file_name, file_path + '-' + file_name)
+        return links
+
+    def getErrorUrl(self, type):
+        file_path = 'error/'
+        file_name = type + 'error.txt'
+        with open(file_path + file_name, 'r') as fp:
+            all = fp.read()
+        links = all.split()
+        os.rename(file_path + file_name, file_path + '-' + file_name)
+        return links
+
+    # 获取errorday
+    def getDay(self):
+        base_path = 'error/'
+        files = os.listdir(base_path)
+        for file in files:
+            if '-' in file:
+                continue
+            if 'errorday' in file:
+                file_path = base_path + file
+                print('开始爬取文件' + file)
+                with open(file_path, 'r') as fp:
+                    all = fp.read()
+                days = all.split()
+                os.rename(file_path, base_path + '-' + file)
+                break
+        return days
+
+    # 获取errrorpage
+    def getPage(self):
+        base_path = 'error/'
+        files = os.listdir(base_path)
+        for file in files:
+            if '-' in file:
+                continue
+            if 'errorpage' in file:
+                file_path = base_path + file
+                print('开始爬取文件' + file)
+                with open(file_path, 'r') as fp:
+                    all = fp.read()
+                pages = all.split()
+                os.rename(file_path, base_path + '-' + file)
+                break
+        return pages
+
+    # 循环获取erpage
+    def getErPage(self):
+        file_path = 'error/erpage.txt'
+        size = os.path.getsize(file_path)
+        print(size)
+        if size == 0:
+            return []
+        else:
+            with open(file_path, 'r') as fp:
+                all = fp.read()
+            pages = all.split()
+            os.remove(file_path)
+            return pages
+
+
+    def markSecondError(self,code,date,pagenum):
+        if pagenum == 0:
+            with open('error/erday.txt', 'a', encoding='utf-8') as f:
+                f.write(code + '&' + date + '\n')
+        else:
+            with open('error/erpage.txt', 'a', encoding='utf-8') as f:
+                f.write(code + '&' + date + '&' + str(pagenum) + '\n')
+
+
+    # 获取cookies
+    def getCookies(self,date,code):
+        search_url = 'https://kns.cnki.net/kns/request/SearchHandler.ashx/'
+        now_time = time.strftime('%a %b %d %Y %H:%M:%S') + ' GMT+0800 (中国标准时间)'
+        params = {
+            "action": "",
+            "NaviCode": code,
+            "ua": "1.21",
+            "isinEn": "1",
+            "PageName": "ASP.brief_result_aspx",
+            "DbPrefix": "SCDB",
+            "DbCatalog": "中国学术文献网络出版总库",
+            "ConfigFile": "SCDB.xml",
+            "db_opt": "CJFQ,CJRF,CJFN,CDFD,CMFD,CPFD,IPFD,CCND,BDZK,CISD,SNAD,CCJD",
+            "publishdate_from": date,
+            "publishdate_to": date,
+            "CKB_extension": "ZYW",
+            "his": "0",
+            '__': now_time
+        }
+        session_response = requests.get(search_url, params=params)
+        cookies = requests.utils.dict_from_cookiejar(session_response.cookies)
+        return cookies
 
 def isLeapYear(years):
     assert isinstance(years, int), "请输入整数年，如 2018"

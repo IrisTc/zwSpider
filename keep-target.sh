@@ -1,7 +1,7 @@
 #!/bin/bash
 year=$1
 filename="target/$year/code.txt"
-keepfile='keep.log'
+keepfile='keep-target.log'
 timeout=20
 tensorcount=$(ps -ef | grep python3 | grep -v grep | wc -l)
 cd /mnt/d/spider/zwData

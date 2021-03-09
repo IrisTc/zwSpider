@@ -12,10 +12,13 @@ class JournalSpider(scrapy.Spider):
 
     def start_requests(self):
         self.year = '2020'
+        getError = True
         base_url = 'https://kns.cnki.net/KCMS/detail/detail.aspx?'
-        base_path = 'target/'+self.year+'/'
         util = UtilClass(self.year)
-        links = util.getLinks(base_path,'journal')
+        if getError:
+            links = util.getErrorLinks('journal')
+        else:
+            links = util.getLinks('journal')
         for link in links:
             url = base_url + link
             yield scrapy.Request(
@@ -40,7 +43,8 @@ class JournalSpider(scrapy.Spider):
         magazinefunc = magazine.xpath('./@onclick').extract_first()
         m = magazinefunc.strip().split("'")
         item['magazine'] = magazine.xpath('./text()').extract_first() + "-pcode=" + m[1] + "&pykm=" + m[3]
-        item['summary'] = response.xpath('string(//span[@id="ChDivSummary"])').extract_first()
+        summary = response.xpath('string(//span[@id="ChDivSummary"])').extract_first()
+        item['summary'] = summary.replace('\n', '').replace('\r', ' ')
         keywordsfuncs = response.xpath('//p[@class="keywords"]/a/@onclick').extract()
         if len(keywordsfuncs) > 0:
             keywords = ""

@@ -54,7 +54,7 @@ class LinkSpider(scrapy.Spider):
         cookies_now = cookies
         pagerTitleCell = response.xpath('//div[@class="pagerTitleCell"]/text()').extract_first()
         if pagerTitleCell == None:
-            self.markError(code,date,0)
+            self.markFirstError(code,date,0)
             return
         page = pagerTitleCell.strip()
         num = int(re.findall(r'\d+', page.replace(',', ''))[0]) # 文献数
@@ -83,7 +83,7 @@ class LinkSpider(scrapy.Spider):
     def parse_content(self,response,pagenum,code,date):
         rows = response.xpath('//table[@class="GridTableContent"]/tr')
         if len(rows) <= 1:
-            self.markError(code,date,pagenum)
+            self.markFirstError(code,date,pagenum)
             return
         else:
             rows.pop(0) # 去掉标题行
@@ -98,13 +98,12 @@ class LinkSpider(scrapy.Spider):
                 item['db'] = row.xpath('./td')[5].xpath('./text()').extract_first().strip()
                 yield item
 
-
-    def markError(self,code,date,pagenum):
+    def markFirstError(self, code, date, pagenum):
         if pagenum == 0:
-            with open('error/errorday.txt', 'a', encoding='utf-8') as f:
+            with open('error/errorday_' + date + '.txt', 'a', encoding='utf-8') as f:
                 f.write(code + '&' + date + '\n')
         else:
-            with open('error/errorpage.txt', 'a', encoding='utf-8') as f:
+            with open('error/errorpage_' + date + 'txt', 'a', encoding='utf-8') as f:
                 f.write(code + '&' + date + '&' + str(pagenum) + '\n')
 
 

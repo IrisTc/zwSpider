@@ -83,44 +83,67 @@ class ZwdataDownloaderMiddleware:
     def process_response(self, request, response, spider):
         if response.status != 200:
             key = request.cb_kwargs
-            if spider.name == 'link' or spider.name == 'link-error':
+            if spider.name == 'link':
                 if 'pagenum' in key:
                     pagenum = key['pagenum']
                 else:
                     pagenum = 0
-                self.markError(key['code'], key['date'], pagenum)
+                self.markFirstError(key['code'], key['date'], pagenum)
                 return response
-            if spider.name == 'journal' or spider.name == 'boso':
-                with open('error/errorlink.txt', 'a', encoding='utf-8') as file:
-                    file.write(key['url'] + '\n')
+            elif 'error' in spider.name:
+                if 'pagenum' in key:
+                    pagenum = key['pagenum']
+                else:
+                    pagenum = 0
+                self.markSecondError(key['code'], key['date'], pagenum)
+            else:
+                self.markLinkError(key['url'], spider.name)
         else:
             return response
 
     def process_exception(self, request, exception, spider):
         key = request.cb_kwargs
-        if spider.name == 'link' or spider.name == 'link-error':
+        if spider.name == 'link':
             if 'pagenum' in key:
                 pagenum = key['pagenum']
             else:
                 pagenum = 0
-            self.markError(key['code'],key['date'],pagenum)
-        if spider.name == 'journal':
-            with open('error/journalerror.txt', 'a', encoding='utf-8') as file:
-                file.write(key['url'] + '\n')
-        if spider.name == 'boso':
-            with open('error/bosoerror.txt', 'a', encoding='utf-8') as file:
-                file.write(key['url'] + '\n')
-        if spider.name == 'achievement':
-            with open('error/achivementerror.txt', 'a', encoding='utf-8') as file:
-                file.write(key['url'] + '\n')
+            self.markFirstError(key['code'],key['date'],pagenum)
+        elif 'error' in spider.name:
+            if 'pagenum' in key:
+                pagenum = key['pagenum']
+            else:
+                pagenum = 0
+            self.markSecondError(key['code'],key['date'],pagenum)
+        else:
+            self.markLinkError(key['url'],spider.name)
         return None
 
-    def markError(self,code,date,pagenum):
+    def markLinkError(self,url,type):
+        if type == 'journal':
+            with open('error/journalerror.txt', 'a', encoding='utf-8') as file:
+                file.write(url + '\n')
+        if type == 'boso':
+            with open('error/bosoerror.txt', 'a', encoding='utf-8') as file:
+                file.write(url + '\n')
+        if type == 'achievement':
+            with open('error/achivementerror.txt', 'a', encoding='utf-8') as file:
+                file.write(url + '\n')
+
+    def markSecondError(self,code,date,pagenum):
         if pagenum == 0:
-            with open('error/errorday.txt', 'a', encoding='utf-8') as f:
+            with open('error/erday.txt', 'a', encoding='utf-8') as f:
                 f.write(code + '&' + date + '\n')
         else:
-            with open('error/errorpage.txt', 'a', encoding='utf-8') as f:
+            with open('error/erpage.txt', 'a', encoding='utf-8') as f:
+                f.write(code + '&' + date + '&' + str(pagenum) + '\n')
+
+    def markFirstError(self, code, date, pagenum):
+        if pagenum == 0:
+            with open('error/errorday_' + date + '.txt', 'a', encoding='utf-8') as f:
+                f.write(code + '&' + date + '\n')
+        else:
+            with open('error/errorpage_' + date + 'txt', 'a', encoding='utf-8') as f:
                 f.write(code + '&' + date + '&' + str(pagenum) + '\n')
 
     def spider_opened(self, spider):
