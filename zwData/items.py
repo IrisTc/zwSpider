@@ -67,3 +67,11 @@ class AchievementItem(scrapy.Item):
     pass_time = scrapy.Field() # 研究起止时间
     level = scrapy.Field() # 成果水平
     evaluate = scrapy.Field() # 评价形式
+
+class AuthorItem(scrapy.Item):
+    code = scrapy.Field()
+    name = scrapy.Field()
+    school = scrapy.Field()
+    category = scrapy.Field()
+    upload_amount = scrapy.Field()
+    download_amount = scrapy.Field()

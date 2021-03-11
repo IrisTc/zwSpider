@@ -61,7 +61,7 @@ class UtilClass():
                 print('开始爬取文件' + file)
                 with open(file_path, 'r') as fp:
                     all = fp.read()
-                links = all.split()
+                links = all.split('\n')
                 os.rename(file_path, base_path + '-' + file)
                 break
         return links
@@ -71,7 +71,7 @@ class UtilClass():
         file_name = 'error_' + type + '.txt'
         with open(file_path+file_name, 'r') as fp:
             all = fp.read()
-        links = all.split()
+        links = all.split('\n')
         os.rename(file_path + file_name, file_path + '-' + file_name)
         return links
 
@@ -80,7 +80,7 @@ class UtilClass():
         file_name = type + 'error.txt'
         with open(file_path + file_name, 'r') as fp:
             all = fp.read()
-        links = all.split()
+        links = all.split('\n')
         os.rename(file_path + file_name, file_path + '-' + file_name)
         return links
 
@@ -96,7 +96,7 @@ class UtilClass():
                 print('开始爬取文件' + file)
                 with open(file_path, 'r') as fp:
                     all = fp.read()
-                days = all.split()
+                days = all.split('\n')
                 os.rename(file_path, base_path + '-' + file)
                 break
         return days
@@ -113,7 +113,7 @@ class UtilClass():
                 print('开始爬取文件' + file)
                 with open(file_path, 'r') as fp:
                     all = fp.read()
-                pages = all.split()
+                pages = all.split('\n')
                 os.rename(file_path, base_path + '-' + file)
                 break
         return pages
@@ -128,10 +128,24 @@ class UtilClass():
         else:
             with open(file_path, 'r') as fp:
                 all = fp.read()
-            pages = all.split()
+            pages = all.split('\n')
             os.remove(file_path)
             return pages
 
+    def getAuthor(self):
+        base_path = './author_output/'
+        files = os.listdir(base_path)
+        for file in files:
+            if '-' in file:
+                continue
+            else:
+                file_path = base_path + file
+                with open(file_path, 'r', encoding='utf-8') as fp:
+                    all = fp.read()
+                authors = all.split('\n')
+                os.rename(file_path, base_path + '-' + file)
+                break
+        return authors
 
     def markSecondError(self,code,date,pagenum):
         if pagenum == 0:

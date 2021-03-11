@@ -62,7 +62,7 @@ class DmozSpider(scrapy.Spider):
                 authors = authors + "&" + author
             item['authors'] = authors[1:]
         else:
-            item['authors'] = authors.xpath('./text()').extract_first()
+            item['authors'] = authors.xpath('./text()').extract_first() + "-null"
         if school.xpath('./a'):
             item['organs'] = school.xpath('./a/text()').extract_first().strip()
         else:

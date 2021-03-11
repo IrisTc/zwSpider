@@ -129,6 +129,9 @@ class ZwdataDownloaderMiddleware:
         if type == 'achievement':
             with open('error/achivementerror.txt', 'a', encoding='utf-8') as file:
                 file.write(url + '\n')
+        if type == 'author':
+            with open('author/error.txt','a', encoding='utf-8') as file:
+                file.write(url + '\n')
 
     def markSecondError(self,code,date,pagenum):
         if pagenum == 0:

@@ -29,10 +29,7 @@ class ZwdataPipeline:
                 with open('target/' + self.year + '/achievement_' + item['code'] + '.txt', 'a', encoding='utf-8') as f:
                     f.write(item['url'] + '\n')
             return item
-        if spider.name == 'journal' or spider.name == 'boso' or spider.name == 'achievement':
-            print(item['title'])
-            return item
-        if 'error' in spider.name:
+        elif 'error' in spider.name:
             if item['db'] == '期刊':
                 with open('target/' + self.year + '/error_journal.txt', 'a', encoding='utf-8') as f:
                     f.write(item['url'] + '\n')
@@ -42,4 +39,6 @@ class ZwdataPipeline:
             if item['db'] == '科技成果':
                 with open('target/' + self.year + '/error_achievement.txt', 'a', encoding='utf-8') as f:
                     f.write(item['url'] + '\n')
+            return item
+        else:
             return item

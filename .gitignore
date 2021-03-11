@@ -1,6 +1,8 @@
 error/
 result/
 target/
+author/
+author_output/
 
 *.csv
 
