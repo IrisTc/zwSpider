@@ -66,15 +66,6 @@ class UtilClass():
                 break
         return links
 
-    def getErrorLinks(self,type):
-        file_path = 'target/' + self.year + '/'
-        file_name = 'error_' + type + '.txt'
-        with open(file_path+file_name, 'r') as fp:
-            all = fp.read()
-        links = all.split('\n')
-        os.rename(file_path + file_name, file_path + '-' + file_name)
-        return links
-
     def getErrorUrl(self, type):
         file_path = 'error/'
         file_name = type + 'error.txt'

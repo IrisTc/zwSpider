@@ -10,13 +10,23 @@ class JournalSpider(scrapy.Spider):
     name = 'journal'
     allowed_domains = ['kns.cnki.net']
 
+    # 获取setting中的年份和是否在解析失败的链接内容
+    @classmethod
+    def from_crawler(cls, crawler, *args, **kwargs):
+        spider = cls(crawler.settings, *args, **kwargs)
+        spider._set_crawler(crawler)
+        return spider
+
+    def __init__(self, settings, *args, **kwargs):
+        super(JournalSpider, self).__init__(*args, **kwargs)
+        self.year = settings.get('YEAR')
+        self.getError = settings.get('getError')
+
     def start_requests(self):
-        self.year = '2020'
-        getError = True
         base_url = 'https://kns.cnki.net/KCMS/detail/detail.aspx?'
         util = UtilClass(self.year)
-        if getError:
-            links = util.getErrorLinks('journal')
+        if(self.getError):
+            links = util.getErrorUrl('journal')
         else:
             links = util.getLinks('journal')
         for link in links:

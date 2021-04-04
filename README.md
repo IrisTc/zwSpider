@@ -1,4 +1,23 @@
-##### 由于使用scrapy框架多层嵌套循环导致效率低下，采用定时执行脚本的方式实现一年内自动化爬取，在Linux环境下使用定时执行工具cron每分钟执行脚本
+### spider
+- `link_spider.py` 爬取所有链接，在settings.py中设置年份，在target文件夹下新建相应年份的空文件夹，并复制放入code.txt
+- `journal_spider.py` `boso_spider.py` `achievement_spider.py` 分别爬取settings.py中指定年份的期刊、博硕、成果的文章内容或Error中纪录的链接的文章内容
+- `error_day_spider.py` 重新爬取失败日期的链接
+- `error_page_spider` 重新爬取失败文章的内容 `error_page_loop_spider` 循环爬取失败的文章直到没有失败的文章
+### util.py
+工具类
+### settings.py
+- 年份设置
+- 是否是爬取Error的链接内容
+- 爬取速度设置
+### middlewares.py
+错误拦截处理
+### pipelines.py
+收集内容后的处理
+### items.py
+定义数据格式
+
+### 配置执行环境
+*由于使用scrapy框架多层嵌套循环导致效率低下，采用定时执行脚本的方式实现一年内自动化爬取，在Linux环境下使用定时执行工具cron每分钟执行脚本*
 ```
 打开cron配置文件
 crontab -e

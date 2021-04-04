@@ -6,21 +6,29 @@ from zwData.items import BosoItem
 from zwData.spiders.util import UtilClass
 
 
-class DmozSpider(scrapy.Spider):
+class BosoSpider(scrapy.Spider):
     name = "boso"
     allowned_domains = ["kns.cnki.net"]
 
+    # 获取setting中的年份和是否在解析失败的链接内容
+    @classmethod
+    def from_crawler(cls, crawler, *args, **kwargs):
+        spider = cls(crawler.settings, *args, **kwargs)
+        spider._set_crawler(crawler)
+        return spider
+
+    def __init__(self, settings, *args, **kwargs):
+        super(BosoSpider, self).__init__(*args, **kwargs)
+        self.year = settings.get('YEAR')
+        self.getError = settings.get('getError')
+
     def start_requests(self):
-        self.year = '2020'
-        getError = True
         base_url = 'https://kns.cnki.net/KCMS/detail/detail.aspx?'
         util = UtilClass(self.year)
-        if getError:
+        if (self.getError):
             links = util.getErrorUrl('boso')
-            # links = util.getErrorLinks('boso')
         else:
             links = util.getLinks('boso')
-        # link = 'dbcode=CMFD&dbname=CMFD202002&filename=1020379035.nh'
         for link in links:
             url = base_url + link
             yield scrapy.Request(
@@ -51,22 +59,23 @@ class DmozSpider(scrapy.Spider):
             keywords = keywords + ";" + k[3] + "-" + k[7]
         item['keywords'] = keywords[1:]
         brief = response.xpath('//div[@class="wx-tit"]/h3/span')
-        authors = brief[0]
-        school = brief[1]
-        if authors.xpath('./a'):
-            authorfuncs = authors.xpath('./a/@onclick').extract()
-            authors = ""
-            for a in authorfuncs:
-                a = a.strip().split("'")
-                author = a[3] + '-' + a[5]
-                authors = authors + "&" + author
-            item['authors'] = authors[1:]
-        else:
-            item['authors'] = authors.xpath('./text()').extract_first() + "-null"
-        if school.xpath('./a'):
-            item['organs'] = school.xpath('./a/text()').extract_first().strip()
-        else:
-            item['organs'] = school.xpath('./text()').extract_first()
+        if(len(brief)>=2):
+            authors = brief[0]
+            if authors.xpath('./a'):
+                authorfuncs = authors.xpath('./a/@onclick').extract()
+                authors = ""
+                for a in authorfuncs:
+                    a = a.strip().split("'")
+                    author = a[3] + '-' + a[5]
+                    authors = authors + "&" + author
+                item['authors'] = authors[1:]
+            else:
+                item['authors'] = authors.xpath('./text()').extract_first() + "-null"
+            school = brief[1]
+            if school.xpath('./a'):
+                item['organs'] = school.xpath('./a/text()').extract_first().strip()
+            else:
+                item['organs'] = school.xpath('./text()').extract_first()
         top_space = response.xpath('//li[@class="top-space"]')
         for space in top_space:  # 存在不同文献格式不同，只能判断标题名称
             title = space.xpath('./span/text()').extract_first()

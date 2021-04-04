@@ -19,7 +19,7 @@ class JournalSpider(scrapy.Spider):
     name = "error-day"
     allowned_domains = ["kns.cnki.net"]
 
-    # 爬取某年所有链接
+    # 根据error中纪录的日期和code获取cookies
     def start_requests(self):
         self.base_url = 'https://kns.cnki.net/kns/brief/brief.aspx?RecordsPerPage=50&QueryID=33&ID=&turnpage=1&tpagemode=L&dbPrefix=SCDB&Fields=&DisplayMode=listmode&PageName=ASP.brief_result_aspx&isinEn=1&curpage='
         self.util = UtilClass(self.year)
@@ -43,6 +43,7 @@ class JournalSpider(scrapy.Spider):
                 dont_filter=True
             )
 
+    # 同link_spider
     def parse_page(self,response,cookies,code,date):
         cookies_now = cookies
         pagerTitleCell = response.xpath('//div[@class="pagerTitleCell"]/text()').extract_first()

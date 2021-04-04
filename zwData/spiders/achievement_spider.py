@@ -7,17 +7,26 @@ from zwData.items import AchievementItem
 from zwData.spiders.util import UtilClass
 
 
-class AchievementSpiderSpider(scrapy.Spider):
+class AchievementSpider(scrapy.Spider):
     name = 'achievement'
     allowed_domains = ['kns.cnki.net']
 
+    # 获取setting中的年份和是否在解析失败的链接内容
+    @classmethod
+    def from_crawler(cls, crawler, *args, **kwargs):
+        spider = cls(crawler.settings, *args, **kwargs)
+        spider._set_crawler(crawler)
+        return spider
+
+    def __init__(self, settings, *args, **kwargs):
+        super(AchievementSpider, self).__init__(*args, **kwargs)
+        self.year = settings.get('YEAR')
+        self.getError = settings.get('getError')
+
     def start_requests(self):
-        self.year = '2020'
-        getError = True
         base_url = 'https://kns.cnki.net/kcms/detail/detail.aspx?'
         util = UtilClass(self.year)
-        if getError:
-            # links = util.getErrorLinks('achievement')
+        if (self.getError):
             links = util.getErrorUrl('achievement')
         else:
             links = util.getLinks('achievement')

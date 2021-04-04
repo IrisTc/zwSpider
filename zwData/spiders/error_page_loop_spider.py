@@ -20,7 +20,7 @@ class JournalSpider(scrapy.Spider):
     name = "error-page-loop"
     allowned_domains = ["kns.cnki.net"]
 
-    # 爬取某年所有链接
+    # 重复爬取失败的文件
     def start_requests(self):
         self.base_url = 'https://kns.cnki.net/kns/brief/brief.aspx?RecordsPerPage=50&QueryID=33&ID=&turnpage=1&tpagemode=L&dbPrefix=SCDB&Fields=&DisplayMode=listmode&PageName=ASP.brief_result_aspx&isinEn=1&curpage='
         self.util = UtilClass(self.year)

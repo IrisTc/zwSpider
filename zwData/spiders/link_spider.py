@@ -36,6 +36,8 @@ class LinkSpider(scrapy.Spider):
         for date in dates:
             if date == datetime.datetime.now().strftime('%Y-%m-%d'): #若日期超过目前日期停止
                 break
+
+            # 根据日期、code获取cookies
             cookies = self.getCookies(date,code)
             url_first = self.base_url + '1'
             yield scrapy.Request(
@@ -50,6 +52,7 @@ class LinkSpider(scrapy.Spider):
                 dont_filter=True
             )
 
+    # 第一页内容解析，获取页数信息
     def parse_page(self,response,cookies,code,date):
         cookies_now = cookies
         pagerTitleCell = response.xpath('//div[@class="pagerTitleCell"]/text()').extract_first()
@@ -80,9 +83,11 @@ class LinkSpider(scrapy.Spider):
                 dont_filter=True
             )
 
+    # 解析列表内容获取链接
     def parse_content(self,response,pagenum,code,date):
         rows = response.xpath('//table[@class="GridTableContent"]/tr')
         if len(rows) <= 1:
+            # 某一页没有获取到列表内容
             self.markFirstError(code,date,pagenum)
             return
         else:

@@ -24,7 +24,7 @@ then
 	then
 		result_filename=${filename::-7}
 	else
-		result_filename=${filename%.*}".csv"
+		result_filename=${filename%.*}
 	fi
 	echo "存储文件为$result_filename"
 	python3 -m scrapy crawl $result_type -o "$result_path$result_filename.csv" -s LOG_FILE=warn.log

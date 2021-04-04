@@ -9,7 +9,10 @@
 import random
 
 BOT_NAME = 'zwData'
+# 年份
 YEAR = '2020'
+# 是否在解析失败的页面内容
+getError = False
 
 SPIDER_MODULES = ['zwData.spiders']
 NEWSPIDER_MODULE = 'zwData.spiders'

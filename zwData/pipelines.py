@@ -41,4 +41,7 @@ class ZwdataPipeline:
                     f.write(item['url'] + '\n')
             return item
         else:
+            for key in item:
+                if(item[key]):
+                    item[key] = item[key].replace('\n', '').replace('\r', ' ')
             return item

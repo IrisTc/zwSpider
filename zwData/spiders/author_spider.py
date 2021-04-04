@@ -10,18 +10,20 @@ class AuthorSpider(scrapy.Spider):
     name = 'author'
     allowed_domains = ['kns.cnki.net']
 
+    # 获取setting中的年份和是否在解析失败的链接内容
+    @classmethod
+    def from_crawler(cls, crawler, *args, **kwargs):
+        spider = cls(crawler.settings, *args, **kwargs)
+        spider._set_crawler(crawler)
+        return spider
+
+    def __init__(self, settings, *args, **kwargs):
+        super(AuthorSpider, self).__init__(*args, **kwargs)
+        self.year = settings.get('YEAR')
+
     def start_requests(self):
-        self.year = '2020'
         util = UtilClass(self.year)
         authors = util.getAuthor()
-        # url = 'https://kns.cnki.net/kcms/detail/knetsearch.aspx?sfield=au&skey=' + 'Wendy Dermawan' + '&code=' + '46896514'
-        # yield scrapy.Request(
-        #     url=url,
-        #     callback=self.parse,
-        #     cb_kwargs={
-        #         'code': 'code'
-        #     },
-        # )
         for author in authors:
             a = author.split('-')
             code = a[1]
